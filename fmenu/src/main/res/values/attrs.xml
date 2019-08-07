@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FMenu">
+        <attr name="fSrc" format="reference"/>
+        <attr name="fSrcTint" format="reference"/>
+        <attr name="fRadius" format="dimension"/>
+        <attr name="fBt1Text" format="string"/>
+        <attr name="fBt2Text" format="string"/>
+        <attr name="fBt1TextColor" format="reference"/>
+        <attr name="fBt2TextColor" format="reference"/>
+        <attr name="fBt1Background" format="reference"/>
+        <attr name="fBt2Background" format="reference"/>
+        <attr name="fBt1Drawable" format="reference"/>
+        <attr name="fBt2Drawable" format="reference"/>
+        <attr name="fBt1DrawableTint" format="reference"/>
+        <attr name="fBt2DrawableTint" format="reference"/>
+        <attr name="fBt1DrawablePadding" format="dimension"/>
+        <attr name="fBt2DrawablePadding" format="dimension"/>
+        <attr name="fShowMenu" format="boolean"/>
+    </declare-styleable>
+</resources>
