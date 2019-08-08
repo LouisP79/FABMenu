@@ -3,7 +3,8 @@ Libreria morphing del Floating Action Button Android para obtener 2 opciones
 
 [![](https://jitpack.io/v/LouisP79/FABMenu.svg)](https://jitpack.io/#LouisP79/FABMenu)
 
-![](logo.png)
+![Logo](logo.png)
+![Demo](presentation.gif)
 
 ### Implementación
 
