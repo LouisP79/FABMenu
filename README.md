@@ -1,4 +1,4 @@
-# FMenu
+# FABMenu
 Libreria morphing del Floating Action Button Android para obtener 2 opciones
 
 [![](https://jitpack.io/v/LouisP79/FABMenu.svg)](https://jitpack.io/#LouisP79/FABMenu)
