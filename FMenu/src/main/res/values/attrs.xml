@@ -3,6 +3,7 @@
     <declare-styleable name="FMenu">
         <attr name="fSrc" format="reference"/>
         <attr name="fSrcTint" format="reference"/>
+        <attr name="fSrcBackground" format="reference"/>
         <attr name="fRadius" format="dimension"/>
         <attr name="fBt1Text" format="string"/>
         <attr name="fBt2Text" format="string"/>

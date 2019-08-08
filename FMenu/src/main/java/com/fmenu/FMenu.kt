@@ -1,6 +1,7 @@
-package com.sudtechnologies.fmenu
+package com.fmenu
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.AttributeSet
 import android.view.View
 import android.widget.Button
@@ -15,7 +16,7 @@ import kotlin.math.hypot
 
 class FMenu: FrameLayout {
 
-    val listener: OnFMenuClick? = null
+    private var onFMenuClickListener: OnFMenuClick? = null
 
     private lateinit var overlay: View
     private lateinit var fab: FloatingActionButton
@@ -27,6 +28,12 @@ class FMenu: FrameLayout {
         set(value) {
             field = value
             fab.setImageDrawable(ContextCompat.getDrawable(context, field))
+        }
+
+    var fSrcBackground: Int = R.color.colorAccent
+        set(value) {
+            field = value
+            fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, field))
         }
 
     var fSrcTint: Int = android.R.color.white
@@ -80,13 +87,13 @@ class FMenu: FrameLayout {
     var fBt1Drawable: Int = R.drawable.ic_edit_black_24dp
         set(value) {
             field = value
-            btn1.setCompoundDrawables(ContextCompat.getDrawable(context,field),null,null,null)
+            btn1.setCompoundDrawablesWithIntrinsicBounds(field,0,0,0)
         }
 
     var fBt2Drawable: Int = R.drawable.ic_edit_black_24dp
         set(value) {
             field = value
-            btn2.setCompoundDrawables(ContextCompat.getDrawable(context,field),null,null,null)
+            btn2.setCompoundDrawablesWithIntrinsicBounds(field,0,0,0)
         }
 
     var fBt1DrawableTint: Int = R.color.colorAccent
@@ -117,7 +124,7 @@ class FMenu: FrameLayout {
             btn2.compoundDrawablePadding = field.toInt()
         }
 
-    var fShowMwnu: Boolean = false
+    var fShowMenu: Boolean = false
         set(value) {
             field = value
             if(field) card.visibility = View.VISIBLE else card.visibility = View.INVISIBLE
@@ -126,6 +133,10 @@ class FMenu: FrameLayout {
     constructor(context: Context): super(context) {setup()}
     constructor(context: Context, attrs: AttributeSet): super(context, attrs) {setup(attrs)}
     constructor(context: Context, attrs: AttributeSet, defStyle: Int): super(context, attrs, defStyle) {setup(attrs,defStyle)}
+
+    fun setOnFMenuClickListener(listener: OnFMenuClick){
+        onFMenuClickListener = listener
+    }
 
     private fun setup(attrs: AttributeSet? = null, defStyle: Int = -1){
         // Creamos la interfaz a partir del layout
@@ -139,8 +150,8 @@ class FMenu: FrameLayout {
 
         fab.setOnClickListener {showFMenu()}
         overlay.setOnClickListener {hideFMenu()}
-        btn1.setOnClickListener { listener?.onFBT1Click() }
-        btn2.setOnClickListener { listener?.onFBT2Click() }
+        btn1.setOnClickListener { onFMenuClickListener?.onFBT1Click() }
+        btn2.setOnClickListener { onFMenuClickListener?.onFBT2Click() }
 
         init(attrs, defStyle)
     }
@@ -149,28 +160,23 @@ class FMenu: FrameLayout {
         val attributes = context.obtainStyledAttributes(attrs, R.styleable.FMenu, defStyle, 0)
 
         fab.setImageDrawable(ContextCompat.getDrawable(context, attributes.getResourceId(R.styleable.FMenu_fSrc, fSrc)))
+        fab.backgroundTintList = ColorStateList.valueOf(attributes.getColor(R.styleable.FMenu_fSrcBackground,ContextCompat.getColor(context, fSrcBackground)))
         fab.setColorFilter(ContextCompat.getColor(context, attributes.getResourceId(R.styleable.FMenu_fSrcTint, fSrcTint)))
         card.radius = attributes.getDimension(R.styleable.FMenu_fRadius, fRadius)
-        btn1.text = attributes.getString(R.styleable.FMenu_fBt1Text)
-        btn2.text = attributes.getString(R.styleable.FMenu_fBt2Text)
+        btn1.text = if(attributes.getString(R.styleable.FMenu_fBt1Text).isNullOrBlank()) fBt1Text else attributes.getString(R.styleable.FMenu_fBt1Text)
+        btn2.text = if(attributes.getString(R.styleable.FMenu_fBt2Text).isNullOrBlank()) fBt2Text else attributes.getString(R.styleable.FMenu_fBt2Text)
         btn1.setTextColor(ContextCompat.getColor(context, attributes.getResourceId(R.styleable.FMenu_fBt1TextColor, fBt1TextColor)))
         btn2.setTextColor(ContextCompat.getColor(context, attributes.getResourceId(R.styleable.FMenu_fBt2TextColor, fBt2TextColor)))
         btn1.setBackgroundResource(attributes.getResourceId(R.styleable.FMenu_fBt1Background, fBt1Background))
         btn2.setBackgroundResource(attributes.getResourceId(R.styleable.FMenu_fBt2Background, fBt2Background))
-        btn1.setCompoundDrawables(ContextCompat.getDrawable(context,attributes.getResourceId(R.styleable.FMenu_fBt1Drawable, fBt1Drawable)),null,null,null)
-        btn2.setCompoundDrawables(ContextCompat.getDrawable(context,attributes.getResourceId(R.styleable.FMenu_fBt2Drawable, fBt2Drawable)),null,null,null)
+        btn1.setCompoundDrawablesWithIntrinsicBounds(attributes.getResourceId(R.styleable.FMenu_fBt1Drawable, fBt1Drawable),0,0,0)
+        btn2.setCompoundDrawablesWithIntrinsicBounds(attributes.getResourceId(R.styleable.FMenu_fBt2Drawable, fBt2Drawable),0,0,0)
         btn1.compoundDrawablePadding = attributes.getDimension(R.styleable.FMenu_fBt1DrawablePadding, fBt1DrawablePadding).toInt()
         btn2.compoundDrawablePadding = attributes.getDimension(R.styleable.FMenu_fBt2DrawablePadding, fBt2DrawablePadding).toInt()
+        btn1.compoundDrawables.forEach {it?.setColorFilter(ContextCompat.getColor(context, attributes.getResourceId(R.styleable.FMenu_fBt1DrawableTint, fBt1DrawableTint)), PorterDuff.Mode.SRC_ATOP)}
+        btn2.compoundDrawables.forEach {it?.setColorFilter(ContextCompat.getColor(context, attributes.getResourceId(R.styleable.FMenu_fBt2DrawableTint, fBt2DrawableTint)), PorterDuff.Mode.SRC_ATOP)}
 
-        btn1.compoundDrawables.forEach {
-            it?.setColorFilter(ContextCompat.getColor(context, attributes.getResourceId(R.styleable.FMenu_fBt1DrawableTint, fBt1DrawableTint)), PorterDuff.Mode.SRC_ATOP)
-        }
-
-        btn2.compoundDrawables.forEach {
-            it?.setColorFilter(ContextCompat.getColor(context, attributes.getResourceId(R.styleable.FMenu_fBt2DrawableTint, fBt2DrawableTint)), PorterDuff.Mode.SRC_ATOP)
-        }
-
-        if(attributes.getBoolean(R.styleable.FMenu_fShowMenu, fShowMwnu)) card.visibility = View.VISIBLE else card.visibility = View.INVISIBLE
+        if(attributes.getBoolean(R.styleable.FMenu_fShowMenu, fShowMenu)) card.visibility = View.VISIBLE else card.visibility = View.INVISIBLE
 
         //ocultando attributos
         overlay.visibility = View.GONE
